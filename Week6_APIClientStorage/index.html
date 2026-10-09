@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My API and Web Features</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+            color: #222;
+        }
+
+        /* Navigation */
+        nav {
+            background: #fe6aec;
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        nav button {
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #f39de6;
+            color: white;
+            cursor: pointer;
+        }
+
+        nav button:hover,
+        nav button.active {
+            background: #be3292;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0002;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        input,
+        select,
+        button {
+            font-size: 15px;
+            padding: 9px;
+            margin: 5px 0;
+        }
+
+        .action {
+            background: #a72e84;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .action:hover {
+            background: #d654a6;
+        }
+
+        /* Map */
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        /* Images */
+        img {
+            max-width: 120px;
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: #111;
+            color: white;
+        }
+
+        body.dark-mode .page {
+            background: #222;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= NAVIGATION ================= -->
+
+    <nav>
+        <button class="active"
+                onclick="showPage('home', this)">
+            Home
+        </button>
+
+        <button onclick="showPage('github', this)">
+            GitHub API
+        </button>
+
+        <button onclick="showPage('storage', this)">
+            Local Storage
+        </button>
+
+        <button onclick="showPage('mapPage', this)">
+            Map API
+        </button>
+
+        <button onclick="showPage('preferences', this)">
+            Preferences
+        </button>
+
+        <button onclick="showPage('weather', this)">
+            Weather API
+        </button>
+    </nav>
+
+
+    <!-- ================= HOME ================= -->
+
+    <section id="home" class="page active">
+
+        <h1>My Web Application</h1>
+
+        <p>
+            Welcome to my web application!
+        </p>
+
+        <p>
+            Choose a feature from the navigation menu above.
+        </p>
+
+    </section>
+
+
+    <!-- ================= GITHUB API ================= -->
+
+    <section id="github" class="page">
+
+        <h2>GitHub User Lookup</h2>
+
+        <input
+            type="text"
+            id="githubUsername"
+            placeholder="Enter GitHub Username"
+        >
+
+        <button
+            class="action"
+            onclick="getUser()">
+            Get User
+        </button>
+
+        <div id="userResult"></div>
+
+    </section>
+
+
+    <!-- ================= LOCAL STORAGE ================= -->
+
+    <section id="storage" class="page">
+
+        <h2>Save User Preferences</h2>
+
+        <label for="storageUsername">
+            Enter Name:
+        </label>
+
+        <input
+            type="text"
+            id="storageUsername"
+        >
+
+        <br>
+
+        <button
+            class="action"
+            onclick="saveData()">
+            Save
+        </button>
+
+        <button
+            class="action"
+            onclick="loadData()">
+            Load
+        </button>
+
+        <p id="display"></p>
+
+    </section>
+
+
+    <!-- ================= GOOGLE MAPS ================= -->
+
+    <section id="mapPage" class="page">
+
+        <h2>Google Maps Integration</h2>
+
+        <input
+            type="text"
+            id="locationInput"
+            placeholder="Enter location"
+        >
+
+        <button
+            class="action"
+            onclick="searchLocation()">
+            Search Location
+        </button>
+
+        <div id="map"></div>
+
+        <p id="mapMessage"></p>
+
+    </section>
+
+
+    <!-- ================= USER PREFERENCES ================= -->
+
+    <section id="preferences" class="page">
+
+        <h2>Choose Your Preferences</h2>
+
+        <label for="theme">
+            Theme:
+        </label>
+
+        <select id="theme">
+
+            <option value="light">
+                Light Mode
+            </option>
+
+            <option value="dark">
+                Dark Mode
+            </option>
+
+        </select>
+
+        <br>
+
+        <label for="language">
+            Language:
+        </label>
+
+        <select id="language">
+
+            <option value="en">
+                English
+            </option>
+
+            <option value="es">
+                Spanish
+            </option>
+
+        </select>
+
+        <br>
+
+        <button
+            class="action"
+            onclick="savePreferences()">
+            Save Preferences
+        </button>
+
+        <p id="message"></p>
+
+    </section>
+
+
+    <!-- ================= WEATHER API ================= -->
+
+    <section id="weather" class="page">
+
+        <h2>Weather Checker</h2>
+
+        <input
+            type="text"
+            id="city"
+            placeholder="Enter city name"
+        >
+
+        <button
+            class="action"
+            onclick="getWeather()">
+            Get Weather
+        </button>
+
+        <div id="weatherResult"></div>
+
+    </section>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /* ================= NAVIGATION ================= */
+
+        function showPage(pageId, button) {
+
+            // Hide all pages
+            document
+                .querySelectorAll(".page")
+                .forEach(function(page) {
+
+                    page.classList.remove("active");
+
+                });
+
+
+            // Remove active from navigation buttons
+            document
+                .querySelectorAll("nav button")
+                .forEach(function(btn) {
+
+                    btn.classList.remove("active");
+
+                });
+
+
+            // Show selected page
+            document
+                .getElementById(pageId)
+                .classList.add("active");
+
+
+            // Highlight selected button
+            button.classList.add("active");
+        }
+
+
+        /* ================= GITHUB API ================= */
+
+        function getUser() {
+
+            let username =
+                document
+                .getElementById("githubUsername")
+                .value
+                .trim();
+
+
+            if (username === "") {
+
+                document
+                .getElementById("userResult")
+                .innerHTML =
+                    "<p>Please enter a username.</p>";
+
+                return;
+            }
+
+
+            let url =
+                `https://api.github.com/users/${username}`;
+
+
+            fetch(url)
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error("User not found");
+
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(data => {
+
+                    document
+                    .getElementById("userResult")
+                    .innerHTML = `
+
+                        <h3>
+                            ${data.name || "No Name Found"}
+                        </h3>
+
+                        <img
+                            src="${data.avatar_url}"
+                            alt="GitHub avatar"
+                        >
+
+                        <p>
+                            Public Repos:
+                            ${data.public_repos}
+                        </p>
+
+                        <p>
+                            Followers:
+                            ${data.followers}
+                        </p>
+
+                    `;
+
+                })
+
+                .catch(error => {
+
+                    document
+                    .getElementById("userResult")
+                    .innerHTML =
+                        "<p>GitHub user not found.</p>";
+
+                });
+        }
+
+
+        /* ================= LOCAL STORAGE ================= */
+
+        function saveData() {
+
+            let name =
+                document
+                .getElementById("storageUsername")
+                .value;
+
+
+            localStorage.setItem(
+                "userName",
+                name
+            );
+
+
+            alert("Data Saved!");
+        }
+
+
+        function loadData() {
+
+            let name =
+                localStorage.getItem("userName");
+
+
+            document
+            .getElementById("display")
+            .innerText =
+
+                name
+                ? "Welcome, " + name
+                : "No data saved!";
+        }
+
+
+        /* ================= GOOGLE MAPS ================= */
+
+        let map;
+        let geocoder;
+
+
+        function initMap() {
+
+            geocoder =
+                new google.maps.Geocoder();
+
+
+            map =
+                new google.maps.Map(
+                    document.getElementById("map"),
+                    {
+                        zoom: 5,
+
+                        center: {
+                            lat: 12.8797,
+                            lng: 121.7740
+                        }
+                    }
+                );
+        }
+
+
+        function searchLocation() {
+
+            let location =
+                document
+                .getElementById("locationInput")
+                .value;
+
+
+            if (!location) {
+
+                document
+                .getElementById("mapMessage")
+                .innerText =
+                    "Please enter a location.";
+
+                return;
+            }
+
+
+            geocoder.geocode(
+                {
+                    address: location
+                },
+
+                function(results, status) {
+
+                    if (status === "OK") {
+
+                        map.setCenter(
+                            results[0]
+                            .geometry
+                            .location
+                        );
+
+                        map.setZoom(10);
+
+
+                        document
+                        .getElementById("mapMessage")
+                        .innerText =
+                            "Location found!";
+
+                    }
+
+                    else {
+
+                        document
+                        .getElementById("mapMessage")
+                        .innerText =
+                            "Location not found!";
+
+                    }
+
+                }
+            );
+        }
+
+
+        /* ================= USER PREFERENCES ================= */
+
+        function savePreferences() {
+
+            let theme =
+                document
+                .getElementById("theme")
+                .value;
+
+
+            let language =
+                document
+                .getElementById("language")
+                .value;
+
+
+            localStorage.setItem(
+                "theme",
+                theme
+            );
+
+
+            localStorage.setItem(
+                "language",
+                language
+            );
+
+
+            applyPreferences();
+
+
+            document
+            .getElementById("message")
+            .innerText =
+                "Preferences Saved!";
+        }
+
+
+        function applyPreferences() {
+
+            let savedTheme =
+                localStorage.getItem("theme");
+
+
+            let savedLanguage =
+                localStorage.getItem("language");
+
+
+            if (savedTheme === "dark") {
+
+                document.body
+                .classList
+                .add("dark-mode");
+
+            }
+
+            else {
+
+                document.body
+                .classList
+                .remove("dark-mode");
+
+            }
+
+
+            document
+            .getElementById("theme")
+            .value =
+                savedTheme || "light";
+
+
+            document
+            .getElementById("language")
+            .value =
+                savedLanguage || "en";
+        }
+
+
+        /* ================= WEATHER API ================= */
+
+        function getWeather() {
+
+            let city =
+                document
+                .getElementById("city")
+                .value
+                .trim();
+
+
+            if (city === "") {
+
+                document
+                .getElementById("weatherResult")
+                .innerHTML =
+                    "<p>Please enter a city.</p>";
+
+                return;
+            }
+
+
+            let apiKey =
+                "3b748be77c01dc2f6a7ab3b3343ff068";
+
+
+            let url =
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+
+            fetch(url)
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "City not found"
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(data => {
+
+                    document
+                    .getElementById("weatherResult")
+                    .innerHTML = `
+
+                        <p>
+                            Temperature:
+                            ${data.main.temp}°C
+                        </p>
+
+                        <img
+                            src="https://openweathermap.org/img/w/${data.weather[0].icon}.png"
+                            alt="Weather icon"
+                        >
+
+                        <p>
+                            ${data.weather[0].description}
+                        </p>
+
+                    `;
+
+                })
+
+                .catch(error => {
+
+                    document
+                    .getElementById("weatherResult")
+                    .innerHTML =
+                        "<p>City not found or API unavailable.</p>";
+
+                });
+        }
+
+
+        /* Load saved preferences */
+        applyPreferences();
+
+    </script>
+
+
+    <!-- GOOGLE MAPS API -->
+    <!-- Replace YOUR_API_KEY with your Google Maps API key -->
+
+    <script
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
+
+</body>
+</html>

@@ -52,7 +52,7 @@ This activity focuses on working with APIs and client-side storage in web develo
 ### Week 7 - Mini Full Stack Starter
 This activity focuses on organizing a starter web application and applying concepts learned throughout the previous weeks. It provides practice in structuring project files and combining web development techniques into one project.
 
-**Live Render URL:** 
+**Live Render URL**: https://it112-week7-fullstackstarter-lab-t9ip.onrender.com/
 
 ---
 
